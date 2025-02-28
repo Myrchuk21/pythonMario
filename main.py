@@ -41,6 +41,12 @@ platforms = [
     pygame.Rect(500, 350, 200, 20)
 ]
 
+# Загрузка фона
+background = pygame.image.load("image/background.jpg").convert()  # Подставьте ваш путь к изображению
+
+# Растягиваем фон на весь экран
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+
 # Функции для меню
 def draw_text(text, size, x, y, color=WHITE):
     font = pygame.font.Font(None, size)
@@ -123,7 +129,8 @@ def game_loop():
     global player_color, velocity_x, velocity_y, jump
     clock = pygame.time.Clock()
     while game_running:
-        screen.fill(WHITE)
+        # Отображаем задний фон, растянутый на весь экран
+        screen.blit(background, (0, 0))
 
         # Обработка событий
         for event in pygame.event.get():
