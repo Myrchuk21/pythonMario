@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 # Инициализация Pygame
 pygame.init()
@@ -34,11 +35,9 @@ gravitiy = 0.5
 jump = False
 speed = 5
 
-# Платформы
+# Платформы и фундамент
 platforms = [
-    pygame.Rect(0, 550, 800, 50),
-    pygame.Rect(200, 450, 200, 20),
-    pygame.Rect(500, 350, 200, 20)
+    pygame.Rect(0, 550, 800, 50),  # Статический фундамент
 ]
 
 # Загрузка фона
@@ -125,8 +124,31 @@ def change_character():
                 if event.key == pygame.K_ESCAPE:
                     return
 
+# Функция для создания случайных платформ (с правого края экрана)
+def create_random_platform():
+    # Платформы будут генерироваться с одинаковым шагом по вертикали
+    y = random.randint(300, 450)  # Платформа будет генерироваться по высоте от 300 до 450
+    width = random.randint(100, 200)  # Ширина платформы от 100 до 200
+    x = WIDTH + random.randint(100, 200)  # Платформа появляется с правого края экрана
+    return pygame.Rect(x, y, width, 30)
+
+# Функция для обновления платформ и фундамента (бесконечная горизонтальная генерация)
+def update_platforms():
+    global platforms
+    # Добавляем новую платформу, если их слишком мало
+    if len(platforms) < 3:
+        platforms.append(create_random_platform())
+
+    # Перемещаем платформы влево
+    for platform in platforms:
+        platform.x -= 10  # Платформы двигаются влево
+
+    # Убираем платформы, которые ушли за пределы экрана слева
+    platforms = [platform for platform in platforms if platform.x + platform.width > 0]
+
+# Главный игровой цикл
 def game_loop():
-    global player_color, velocity_x, velocity_y, jump
+    global player_color, velocity_x, velocity_y, jump, platforms
     clock = pygame.time.Clock()
     while game_running:
         # Отображаем задний фон, растянутый на весь экран
@@ -160,6 +182,9 @@ def game_loop():
                 player.y = platform.y - player.height
                 velocity_y = 0
                 jump = False
+
+        # Обновляем платформы и фундамент (бесконечная горизонтальная генерация)
+        update_platforms()
 
         # Отрисовка
         pygame.draw.rect(screen, player_color, player)
