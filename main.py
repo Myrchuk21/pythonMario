@@ -14,9 +14,10 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 
 # Музыка
-pygame.mixer.music.load("music\menu-music.mp3")
+pygame.mixer.music.load("music/menu-music.mp3")
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.5)
 
@@ -24,6 +25,21 @@ pygame.mixer.music.set_volume(0.5)
 volume = 0.5
 player_color = BLUE
 game_running = False
+
+# Параметры игрока
+player = pygame.Rect(100, 500, 50, 50)
+velocity_x = 0
+velocity_y = 0
+gravitiy = 0.5
+jump = False
+speed = 5
+
+# Платформы
+platforms = [
+    pygame.Rect(0, 550, 800, 50),
+    pygame.Rect(200, 450, 200, 20),
+    pygame.Rect(500, 350, 200, 20)
+]
 
 # Функции для меню
 def draw_text(text, size, x, y, color=WHITE):
@@ -88,7 +104,7 @@ def change_character():
         draw_text("Change Character", 50, 250, 50)
         draw_text("Press R for Red, B for Blue", 30, 200, 200)
         draw_text("Press ESC to return", 30, 200, 300)
-        pygame.draw.rect(screen, player_color, (350, 400, 50, 50))  # Отображение текущего цвета персонажа
+        pygame.draw.rect(screen, player_color, (350, 400, 50, 50))
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -104,33 +120,46 @@ def change_character():
                     return
 
 def game_loop():
-    global player_color  # Добавляем глобальную переменную, чтобы цвет менялся
-    player = pygame.Rect(100, 500, 50, 50)
-    gravity = 0.5
-    velocity_y = 0
-    jump = False
-
+    global player_color, velocity_x, velocity_y, jump
+    clock = pygame.time.Clock()
     while game_running:
         screen.fill(WHITE)
-        pygame.draw.rect(screen, player_color, player)  # Теперь цвет будет обновляться
-        pygame.display.flip()
 
+        # Обработка событий
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    velocity_x = -speed
+                if event.key == pygame.K_RIGHT:
+                    velocity_x = speed
                 if event.key == pygame.K_SPACE and not jump:
                     velocity_y = -10
                     jump = True
+            if event.type == pygame.KEYUP:
+                if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
+                    velocity_x = 0
 
-        # Гравитация и движение
-        velocity_y += gravity
+        # Движение игрока
+        player.x += velocity_x
+        velocity_y += gravitiy
         player.y += velocity_y
 
-        if player.y >= 500:
-            player.y = 500
-            jump = False
+        # Проверка коллизий с платформами
+        for platform in platforms:
+            if player.colliderect(platform) and velocity_y > 0:
+                player.y = platform.y - player.height
+                velocity_y = 0
+                jump = False
+
+        # Отрисовка
+        pygame.draw.rect(screen, player_color, player)
+        for platform in platforms:
+            pygame.draw.rect(screen, GREEN, platform)
+        pygame.display.flip()
+        clock.tick(60)
 
 # Запуск игры
 main_menu()
