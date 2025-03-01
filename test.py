@@ -271,9 +271,16 @@ class Mario (Entity):
         self.dy = 0
         self.velocity = 0
         
+        # Загружаем изображение Марио
+        self.image = pygame.image.load("mario.png")  # Убедитесь, что файл mario.png находится в той же папке
+        self.image = pygame.transform.scale(self.image, (self.w, self.h))  # Масштабируем изображение под размеры Марио
+
     def update (self, deltaTime):
         self.currState.execute(self, deltaTime)
 
+    def draw (self):
+        # Отрисовываем изображение вместо прямоугольника
+        screen.blit(self.image, (self.x - camera.x, self.y - camera.y))
 
 # State
 class State (object):

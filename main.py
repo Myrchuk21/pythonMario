@@ -271,9 +271,16 @@ class Mario (Entity):
         self.dy = 0
         self.velocity = 0
         
+        # Загружаем изображение Марио
+        self.image = pygame.image.load("img/mario.png")  # Убедитесь, что файл mario.png находится в той же папке
+        self.image = pygame.transform.scale(self.image, (self.w, self.h))  # Масштабируем изображение под размеры Марио
+
     def update (self, deltaTime):
         self.currState.execute(self, deltaTime)
 
+    def draw (self):
+        # Отрисовываем изображение вместо прямоугольника
+        screen.blit(self.image, (self.x - camera.x, self.y - camera.y))
 
 # State
 class State (object):
@@ -1200,7 +1207,7 @@ def main():
         render()
 
         mario = level.getMario()
-        if mario is notgit None and (mario.y > screenSize[1] or mario.isDead):
+        if mario is not None and (mario.y > screenSize[1] or mario.isDead):
             print("Game Over")
             running = False
 
