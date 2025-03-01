@@ -979,6 +979,54 @@ class LevelOneOne (Level):
         Level.update(self, deltaTime)
         return
 
+####################################
+# Menu
+####################################
+
+class Menu:
+    def __init__(self):
+        self.font = pygame.font.Font(None, 74)  # Шрифт для текста меню
+        self.small_font = pygame.font.Font(None, 50)  # Шрифт для подсказок
+        self.selected_option = 0  # Выбранная опция (0 - начать игру, 1 - звук, 2 - выход)
+        self.sound_enabled = True  # Звук включен по умолчанию
+
+    def draw(self, screen):
+        screen.fill(black)  # Черный фон меню
+
+        # Заголовок меню
+        title = self.font.render("Super Mario Python", True, white)
+        screen.blit(title, (screenSize[0] // 2 - title.get_width() // 2, 100))
+
+        # Опции меню
+        start_text = self.font.render("[1] Начать игру", True, white if self.selected_option == 0 else grey)
+        screen.blit(start_text, (screenSize[0] // 2 - start_text.get_width() // 2, 250))
+
+        sound_text = self.font.render(f"[2] Звук: {'Вкл' if self.sound_enabled else 'Выкл'}", True, white if self.selected_option == 1 else grey)
+        screen.blit(sound_text, (screenSize[0] // 2 - sound_text.get_width() // 2, 350))
+
+        exit_text = self.font.render("[3] Выйти", True, white if self.selected_option == 2 else grey)
+        screen.blit(exit_text, (screenSize[0] // 2 - exit_text.get_width() // 2, 450))
+
+        # Подсказка
+        hint = self.small_font.render("Используйте стрелки и Enter для выбора", True, grey)
+        screen.blit(hint, (screenSize[0] // 2 - hint.get_width() // 2, 550))
+
+        pygame.display.flip()
+
+    def handle_input(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:  # Перемещение вниз по меню
+                self.selected_option = (self.selected_option + 1) % 3
+            elif event.key == pygame.K_UP:  # Перемещение вверх по меню
+                self.selected_option = (self.selected_option - 1) % 3
+            elif event.key == pygame.K_RETURN:  # Выбор опции
+                if self.selected_option == 0:
+                    return "start"  # Начать игру
+                elif self.selected_option == 1:
+                    self.sound_enabled = not self.sound_enabled  # Переключить звук
+                elif self.selected_option == 2:
+                    return "exit"  # Выйти из игры
+        return None
 
 ####################################
 # Globals
@@ -1017,6 +1065,11 @@ pygame.display.set_caption("Курсач")
 camera = Camera()
 clock = pygame.time.Clock()
 running = True
+
+# Menu 
+white = [255, 255, 255]
+black = [0, 0, 0]
+grey = [150, 150, 150]
 
 
 ####################################
@@ -1108,4 +1161,50 @@ while running:
         print("Game Over")
         running = False
 
-pygame.quit()
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode(screenSize)
+    pygame.display.set_caption("Super Mario Python")
+    clock = pygame.time.Clock()
+
+    menu = Menu()
+    in_menu = True
+    running = False
+
+    while in_menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                in_menu = False
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                result = menu.handle_input(event)
+                if result == "start":
+                    in_menu = False
+                    running = True
+                elif result == "exit":
+                    in_menu = False
+                    running = False
+
+        menu.draw(screen)
+        clock.tick(60)
+
+    # Основной игровой цикл
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+
+        tick()
+        render()
+
+        mario = level.getMario()
+        if mario is not None and (mario.y > screenSize[1] or mario.isDead):
+            print("Game Over")
+            running = False
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
