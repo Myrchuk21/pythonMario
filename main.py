@@ -152,6 +152,22 @@ class Coin (Entity):
             # Отрисовываем изображение вместо прямоугольника
             screen.blit(self.image, (self.x - camera.x, self.y - camera.y))
 
+    # Глобальные переменные
+    coin_count = 0  # Счетчик собранных монет
+
+    # Функция для отрисовки счетчика монет
+    def draw_coin_counter(screen, coin_count):
+        font = pygame.font.Font(None, 36)  # Шрифт для текста
+        text = font.render(f"Coins: {coin_count}", True, gold)  # Текст с количеством монет
+        screen.blit(text, (screenSize[0] - 150, 10))  # Позиция в правом верхнем углу
+
+    # Функция render
+    def render():
+        screen.fill(screenBGColor)
+        level.draw()
+        draw_coin_counter(screen, coin_count)  # Отрисовываем счетчик монет
+        pygame.display.flip()
+
 # BrickBlock
 class BrickBlock (Entity):
     def __init__ (self, x, y, w, h, color):
@@ -799,6 +815,14 @@ class CoinStateIdle (State):
 
     def execute (self, entity, deltaTime):
         self.timer += deltaTime
+
+        # Если Марио собирает монету
+        if entity.hasCollision:
+            for tile in entity.collidingObjects:
+                if isinstance(tile, Mario):
+                    global coin_count
+                    coin_count += 1  # Увеличиваем счетчик монет
+                    entity.changeState("unused")  # Переводим монету в состояние "unused"
 
         if self.timer > self.delay:
             entity.changeState("unused")
