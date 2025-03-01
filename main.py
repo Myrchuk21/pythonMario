@@ -1200,7 +1200,7 @@ def main():
         render()
 
         mario = level.getMario()
-        if mario is not None and (mario.y > screenSize[1] or mario.isDead):
+        if mario is notgit None and (mario.y > screenSize[1] or mario.isDead):
             print("Game Over")
             running = False
 
@@ -1208,3 +1208,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+test
