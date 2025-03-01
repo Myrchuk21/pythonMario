@@ -139,13 +139,18 @@ class Coin (Entity):
         self.currState = self.prevState
         self.active = False
 
+        # Загружаем изображение монеты
+        self.image = pygame.image.load("img/coin.png")  # Убедитесь, что файл coin.png находится в той же папке
+        self.image = pygame.transform.scale(self.image, (self.w, self.h))  # Масштабируем изображение под размеры монеты
+
     def update (self, deltaTime):
         if self.active:
             self.currState.execute(self, deltaTime)
 
     def draw (self):
         if self.active:
-            Entity.draw(self)    
+            # Отрисовываем изображение вместо прямоугольника
+            screen.blit(self.image, (self.x - camera.x, self.y - camera.y))
 
 # BrickBlock
 class BrickBlock (Entity):
@@ -193,13 +198,18 @@ class Mushroom (Entity):
         self.dy = 0
         self.velocity = 0
 
+        # Загружаем изображение гриба
+        self.image = pygame.image.load("img/mushroom.png")  # Убедитесь, что файл mushroom.png находится в той же папке
+        self.image = pygame.transform.scale(self.image, (self.w, self.h))  # Масштабируем изображение под размеры гриба
+
     def update (self, deltaTime):
         if self.active:
             self.currState.execute(self, deltaTime)
 
     def draw (self):
         if self.active:
-            Entity.draw(self)
+            # Отрисовываем изображение вместо прямоугольника
+            screen.blit(self.image, (self.x - camera.x, self.y - camera.y))
 
 # Goomba
 class Goomba (Enemy):
@@ -212,9 +222,13 @@ class Goomba (Enemy):
         self.direction = "left"
         self.isSpawned = False
         self.isDead = False
-        self.isDeadDead = False #lulz
+        self.isDeadDead = False
         self.velocity = 0
         self.dy = 0
+
+        # Загружаем изображение Гумбы
+        self.image = pygame.image.load("img/goomba.png")  # Убедитесь, что файл goomba.png находится в той же папке
+        self.image = pygame.transform.scale(self.image, (self.w, self.h))  # Масштабируем изображение под размеры Гумбы
 
     def update (self, deltaTime):
         if not self.isDeadDead:
@@ -222,7 +236,8 @@ class Goomba (Enemy):
 
     def draw (self):
         if self.isSpawned and not self.isDeadDead:
-            Entity.draw(self)
+            # Отрисовываем изображение вместо прямоугольника
+            screen.blit(self.image, (self.x - camera.x, self.y - camera.y))
 
 # Koopa
 class Koopa (Enemy):
@@ -240,13 +255,18 @@ class Koopa (Enemy):
         self.dy = 0
         self.inShell = False
 
+        # Загружаем изображение Копы
+        self.image = pygame.image.load("img/koopa.png")  # Убедитесь, что файл koopa.png находится в той же папке
+        self.image = pygame.transform.scale(self.image, (self.w, self.h))  # Масштабируем изображение под размеры Копы
+
     def update (self, deltaTime):
         if not self.isDeadDead:
             self.currState.execute(self, deltaTime)
 
     def draw (self):
         if self.isSpawned and not self.isDeadDead:
-            Entity.draw(self)
+            # Отрисовываем изображение вместо прямоугольника
+            screen.blit(self.image, (self.x - camera.x, self.y - camera.y))
 
 # Pipe
 class Pipe (Entity):
@@ -256,9 +276,16 @@ class Pipe (Entity):
         self.prevState = self.allStates.get("idle")
         self.currState = self.prevState
 
+        # Загружаем изображение трубы
+        self.image = pygame.image.load("img/pipe.png")  # Убедитесь, что файл pipe.png находится в той же папке
+        self.image = pygame.transform.scale(self.image, (self.w, self.h))  # Масштабируем изображение под размеры трубы
+
     def update (self, deltaTime):
         self.currState.execute(self, deltaTime)
 
+    def draw (self):
+        # Отрисовываем изображение вместо прямоугольника
+        screen.blit(self.image, (self.x - camera.x, self.y - camera.y))
 # Mario
 class Mario (Entity):
     def __init__ (self, x, y, w, h, color):
